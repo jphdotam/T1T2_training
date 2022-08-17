@@ -1,0 +1,99 @@
+# new system
+notes: using wandb
+
+resume:
+  path: false
+  epoch: false
+  reset_optimizer: false
+
+export:
+  # data
+  dicom_path_trainval: ./data/dicoms/train_val
+  dicom_path_test: ./data/dicoms/test
+  # labels
+  label_path_trainval: ./data/labels/train_val
+  label_path_test: ./data/labels/test
+  # models for assisted labelling
+  landmark_model_path: ./data/models/landmark_model.pts
+  # export settings
+  label_classes: [epi, endo]
+  gaussian_sigma: 2
+  source_channels:
+    t1w:
+      channel: 0
+      method: divmax
+    t2w:
+      channel: 1
+      method: divmax
+    pd:
+      channel: 2
+      method: divmax
+    t1_pre:
+      channel: 3
+      method: window
+      wc: 1300
+      ww: 1300
+    t1_post:
+      channel: 3
+      method: window
+      wc: 500
+      ww: 1000
+    t2:
+      channel: 4
+      method: window
+      wc: 60
+      ww: 120
+
+data:
+  npz_path_trainval: ./data/npz/train_val
+  npz_path_test: ./data/npz/test
+
+training:
+  model: 'higher_hrnet'
+  n_epochs: 160
+  # gpu
+  device: cuda
+  dataparallel: false
+  mixed_precision: false
+  # data loading
+  batch_size: 12
+  n_folds: 5
+  num_workers: 4
+  # loss functions
+  train_criterion: mse
+  test_criterion: mse
+  # optimizer
+  optimizer: adamw
+  lr: 0.0001
+  weight_decay: 0.01
+  # scheduling
+  sched: one_cycle
+
+output:
+  model_dir: output/models
+  log_dir: output/logs
+  log_freq: 5  # In iterations
+  save: 'best'  # 'best', 'improvements', 'all'
+  vis_every: 1  # Every n epochs, images sent to WandB
+  vis_n: 10  # Images per epoch sent to WandB
+  vis_res: [224, 224]  # Size of images send to WandB
+  mask_classes:
+    1: s1
+    2: s2
+    3: s3
+    4: s4
+    5: s5
+    6: s6
+
+transforms:
+  train:
+    hflip: 0.5
+    vflip: 0.5
+    randomresizedcrop: [512, 512]
+    rotate: 0.5
+    shiftscalerotate: 0.5
+    elastictransform: 1
+    griddropout: 0.25
+  test:
+    centrecrop: [256, 256]
+    final_resize: [512, 512]

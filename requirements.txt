@@ -1,0 +1,17 @@
+matplotlib
+pyqt5
+pyqtgraph
+scipy
+pytorch
+tqdm
+wandb
+yaml
+pyyaml
+opencv-python
+numpy
+pillow
+scikit-image
+torchvision
+albumentations
+onnxruntime
+statsmodels
